@@ -1,5 +1,7 @@
 # src/config.py
 
+# --- Constants ---
+
 # Files
 FILE_PATH = 'data/'
 FILE_NAME = 'source_data.csv'
