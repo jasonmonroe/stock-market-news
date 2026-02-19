@@ -29,14 +29,24 @@ def run_training_pipeline():
     # --- 3. Data Splitting ---
     utils.show_banner("Splitting Data")
     x = data['final_clean_text']
-    y = data['label']
+    y = data['label'] # Dependent variable
 
     x_train, x_temp, _, y_temp = train_test_split(
-        x, y, test_size=config.TEMPORARY_DATA_SPLIT, stratify=y, random_state=config.SEED
+        x,
+        y,
+        test_size=config.TEMPORARY_DATA_SPLIT,
+        stratify=y,
+        random_state=config.SEED
     )
+
     x_val, x_test, _, _ = train_test_split(
-        x_temp, y_temp, test_size=config.HALF_DATA_SPLIT, stratify=y_temp, random_state=config.SEED
+        x_temp,
+        y_temp,
+        test_size=config.HALF_DATA_SPLIT,
+        stratify=y_temp,
+        random_state=config.SEED
     )
+
     print("Data split into training, validation, and test sets.")
     print(f'Training set size: {len(x_train)}')
     print(f'Validation set size: {len(x_val)}')
