@@ -1,12 +1,73 @@
-# stock-market-news
-Summarizes stock market news sentiment
-
-# Stock Market News Sentiment Analysis
+# Stock Market News Sentiment Analysis & Summarization
 
 This project analyzes daily stock market news to predict sentiment (Positive, Negative, Neutral) and its potential impact on stock prices. It includes a complete pipeline from data preprocessing and feature engineering to model training, tuning, and evaluation. Additionally, it features a component for weekly news summarization using a Large Language Model (Llama 2).
 
 ## Project Structure
 
-### >_ python3 -m venv venv
-### >_ source venv/bin/activate
-### _> pip install -r requirements.txt
+```
+stock-market-news/
+├── data/
+├── models/
+├── notebooks/
+├── reports/
+├── src/
+│   ├── config.py           # All constants and configurations
+│   ├── data_processing.py  # Data loading and cleaning functions
+│   ├── eda.py              # Exploratory data analysis and plotting
+│   ├── modeling.py         # Model training, tuning, and evaluation
+│   ├── summarization.py    # LLM-based news summarization
+│   └── utils.py            # Helper functions (timers, banners, etc.)
+├── .gitignore
+├── main.py                 # Main script to run pipelines
+├── README.md
+└── requirements.txt
+```
+
+## Setup
+
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repo-url>
+    cd stock-market-news
+    ```
+
+2.  **Create and activate a virtual environment:**
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    ```
+
+3.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+4.  **Special Installation for Apple Silicon (M1/M2/M3 Macs):**
+    The `llama-cpp-python` library requires a special compilation flag to enable GPU support on Apple Silicon. Run the following command *after* activating your virtual environment:
+    ```sh
+    export CMAKE_ARGS="-DGGML_METAL=on"
+    pip install llama-cpp-python
+    ```
+
+5.  **Download Data/Models:**
+    - Place the `source_data.csv` file in the `data/` directory.
+    - Place the `glove.6B.100d.txt.word2vec` file in the `models/` directory.
+
+## How to Run
+
+The main script `main.py` can run different parts of the project.
+
+-   **Run the entire pipeline (training and summarization):**
+    ```bash
+    python main.py
+    ```
+
+-   **Run only the model training pipeline:**
+    ```bash
+    python main.py --pipeline training
+    ```
+
+-   **Run only the news summarization pipeline:**
+    ```bash
+    python main.py --pipeline summarization
+    ```

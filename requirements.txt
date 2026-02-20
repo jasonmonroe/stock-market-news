@@ -1,18 +1,30 @@
+# requirements.txt
+# --- Libraries to install ---
+
+# Data Analysis & Viz
 pandas
 numpy
 matplotlib
 seaborn
 scipy
-tensorflow
+
+# Deep Learning (Apple Silicon Optimized)
+tensorflow-macos
 torch
+tensorflow-metal
+
+# NLP & LLMs
 sentence-transformers
-tqdm
 nltk
-scikit-learn
 gensim
+
+# Utilities
+tqdm
 psutil
 huggingface-hub
-llama-cpp-python==0.1.85
+scikit-learn
+
+# Notebook Support
 ipython
 jupyter
 nbformat

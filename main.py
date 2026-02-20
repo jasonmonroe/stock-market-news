@@ -31,7 +31,7 @@ def run_training_pipeline():
     x = data['final_clean_text']
     y = data['label'] # Dependent variable
 
-    x_train, x_temp, _, y_temp = train_test_split(
+    x_train, x_temp, y_train, y_temp = train_test_split(
         x,
         y,
         test_size=config.TEMPORARY_DATA_SPLIT,
@@ -39,7 +39,7 @@ def run_training_pipeline():
         random_state=config.SEED
     )
 
-    x_val, x_test, _, _ = train_test_split(
+    x_val, x_test, y_val, y_test = train_test_split(
         x_temp,
         y_temp,
         test_size=config.HALF_DATA_SPLIT,
