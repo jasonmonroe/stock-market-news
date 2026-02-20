@@ -7,7 +7,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-from src import config, utils, data_processing, summarization
+from src import config, utils, data_processing, summarization, modeling
 
 def run_training_pipeline():
     """
@@ -56,13 +56,26 @@ def run_training_pipeline():
     utils.show_banner("Generating Word Embeddings")
     print("Placeholder for embedding generation.")
 
+    x_train_w2v, x_val_w2v, x_test_w2v = modeling.create_w2v_embeddings(x_train, x_val, x_test, data['final_clean_text'])
+    x_train_glove, x_val_glove, x_test_glove = modeling.create_glove_embeddings(x_train, x_val, x_test)
+    x_train_st, x_val_st, x_test_st = modeling.create_st_embeddings(x_train, x_val, x_test)
+
     # --- 5. Model Training and Tuning ---
     utils.show_banner("Training and Tuning Models")
     print("Placeholder for model training.")
 
+    final_model, final_predictor, model_title = modeling.run_full_modeling_process(
+        x_train_w2v, y_train, x_val_w2v, y_val, x_test_w2v,
+        x_train_glove, x_val_glove, x_test_glove,
+        x_train_st, x_val_st, x_test_st
+    )
+
     # --- 6. Final Model Evaluation ---
     utils.show_banner("Final Model Evaluation")
     print("Placeholder for final evaluation.")
+
+    final_perf = modeling.model_performance_classification_sklearn(final_model, final_predictor, y_test)
+    utils.show_performance(final_perf, f'{model_title} - Final Test Performance')
 
     utils.show_timer(start_time)
     utils.show_banner("MODEL TRAINING PIPELINE COMPLETE")

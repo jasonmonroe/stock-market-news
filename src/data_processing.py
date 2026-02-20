@@ -36,7 +36,29 @@ def apply_porter_stemmer(text: str) -> str:
     return ' '.join([ps.stem(word) for word in words])
 
 
+def _get_optimized_preprocessor():
+    """
+    Creates and returns an optimized text preprocessing function.
+    This avoids re-initializing objects and lists on every call.
+    """
+    # Initialize objects once
+    stemmer = PorterStemmer()
+    # Use a set for O(1) average time complexity lookups
+    stop_words = set(stopwords.words('english'))
+    pattern = re.compile('[^A-Za-z0-9]+')
+
+    def preprocess(text: str) -> str:
+        # 1. Remove special characters and convert to lowercase
+        cleaned_text = re.sub(pattern, ' ', text).lower().strip()
+        # 2. Remove stopwords and apply stemmer
+        words = [stemmer.stem(word) for word in cleaned_text.split() if word not in stop_words]
+        return ' '.join(words)
+
+    return preprocess
+
+
 def preprocess_text(df: pd.DataFrame) -> pd.DataFrame:
     """Applies all text preprocessing steps to the 'news' column."""
-    df['final_clean_text'] = df['news'].apply(remove_special_chars).str.lower().str.strip().apply(remove_stopwords).apply(apply_porter_stemmer)
+    optimized_processor = _get_optimized_preprocessor()
+    df['final_clean_text'] = df['news'].apply(optimized_processor)
     return df

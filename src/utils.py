@@ -19,7 +19,7 @@ def start_timer() -> float:
 def get_time(start_time_float: float) -> str:
     """Formats the elapsed time into a human-readable string."""
     diff = abs(time.time() - start_time_float)
-    hours, remainder = divmod(diff, config.SECS_IN_MIN * config.SECS_IN_MIN)
+    _, remainder = divmod(diff, config.SECS_IN_MIN * config.SECS_IN_MIN)
     minutes, seconds = divmod(remainder, config.SECS_IN_MIN)
     fractional_seconds = seconds - int(seconds)
 
@@ -34,8 +34,8 @@ def show_timer(start_time_float: float) -> None:
 
 def show_banner(title: str, section: str = '') -> None:
     """Prints a stylized banner for console readability."""
-    PADDING = 2
-    strlen = len(title) + PADDING
+    padding = 2
+    strlen = len(title) + padding
     line = '+-' + '-' * strlen + '-+'
 
     print('')
@@ -75,5 +75,7 @@ def show_hardware_info():
         print(f"Device ID: {device_id}")
         print(f"GPU Name: {device_name}")
         print(f"Total VRAM: {device_props.total_memory / (config.KBYTE ** 3):.2f} GB")
+    elif torch.backends.mps.is_available():
+        print("✅ Apple Metal (MPS) GPU detected.")
     else:
         print("⚠️ No GPU detected.")

@@ -9,11 +9,11 @@ CSV_FILE = FILE_PATH + FILE_NAME
 W2V_FILE_NAME = 'models/glove.6B.100d.txt.word2vec'
 
 # General
+COMMON_WORD_CNT = 20
+KBYTE = 1024  # Corrected from 1042
 MSEC = 1000
 SECS_IN_MIN = 60
 SEED = 42
-KBYTE = 1024  # Corrected from 1042
-COMMON_WORD_CNT = 20
 
 # Label Sentiments
 # -1 = Negative sentiment, 0 = neutral, 1 = positive
@@ -56,8 +56,8 @@ USE_ALL_PROCS = -1
 SENTENCE_TRANSFER_MODEL = 'sentence-transformers/all-MiniLM-L6-v2'
 
 # Llama Model
-LLAMA_MODEL_PATH = "models/mistral-7b-instruct-v0.1.Q4_K_M.gguf"
-LLAMA_CONTEXT_SIZE = 2048
+LLAMA_MODEL_PATH = 'models/mistral-7b-instruct-v0.1.q4_K_M.gguf'
+LLAMA_CONTEXT_SIZE = 4096
 
 # LLM Prompt for Summarization
 LLAMA_SUMMARIZATION_PROMPT = """
@@ -84,6 +84,6 @@ Given a set of **news headlines**, extract **positive** and **negative** financi
 
 # Vectors
 GLOVE_VECTOR_SIZE = 100
+VEC_MAX_SIZE = 1000
 W2V_EPOCH_CNT = 40
 W2V_VECTOR_SIZE = 300
-VEC_MAX_SIZE = 1000

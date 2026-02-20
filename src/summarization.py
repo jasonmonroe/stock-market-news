@@ -9,9 +9,8 @@ def aggregate_weekly_news(data: pd.DataFrame) -> pd.DataFrame:
     Aggregates news articles by week.
     """
     data['date'] = pd.to_datetime(data['date'])
-    data['year_week'] = data['date'].dt.strftime('%Y-%U')
-    weekly_news = data.groupby('year_week')['final_clean_text'].apply(lambda x: ' '.join(x)).reset_index()
-    weekly_news.rename(columns={'final_clean_text': 'news'}, inplace=True)
+    data['year_week'] = data['date'].dt.strftime('%Y-%U') # Use ISO week format
+    weekly_news = data.groupby('year_week')['news'].apply(lambda x: ' || '.join(x)).reset_index()
     return weekly_news
 
 def load_llama_model(model_path: str = config.LLAMA_MODEL_PATH) -> Llama:

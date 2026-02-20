@@ -53,6 +53,15 @@ stock-market-news/
     - Place the `source_data.csv` file in the `data/` directory.
     - Place the `glove.6B.100d.txt.word2vec` file in the `models/` directory.
     - If this repo doesn't have `glove.6B.100d.txt.word2vec` you can download it at https://www.kaggle.com/datasets/danielwillgeorge/glove6b100dtxt
+    - Download the LLM model by running this command from the project root:
+    - https://huggingface.co/MaziyarPanahi/Mistral-7B-Instruct-v0.1-GGUF/blob/main/Mistral-7B-Instruct-v0.1.Q4_K_M.gguf
+      ```bash
+      curl -L https://huggingface.co/MaziyarPanahi/Mistral-7B-Instruct-v0.1-GGUF/resolve/main/Mistral-7B-Instruct-v0.1.Q4_K_M.gguf -o models/mistral-7b-instruct-v0.1.Q4_K_M.gguf
+      ```
+      or
+      ```bash
+    - wget https://huggingface.co/MaziyarPanahi/Mistral-7B-Instruct-v0.1-GGUF/resolve/main/Mistral-7B-Instruct-v0.1.Q4_K_M.gguf
+    - ```      
 
 ## How to Run
 
