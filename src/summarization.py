@@ -11,6 +11,7 @@ def aggregate_weekly_news(data: pd.DataFrame) -> pd.DataFrame:
     data['date'] = pd.to_datetime(data['date'])
     data['year_week'] = data['date'].dt.strftime('%Y-%U') # Use ISO week format
     weekly_news = data.groupby('year_week')['news'].apply(lambda x: ' || '.join(x)).reset_index()
+
     return weekly_news
 
 def load_llama_model(model_path: str = config.LLAMA_MODEL_PATH) -> Llama:
@@ -31,11 +32,11 @@ def get_mistral_response(llm: Llama, news: str, prompt: str = config.LLAMA_SUMMA
     prompt_str = f"""[INST]{prompt}News Articles: {news}[/INST]"""
 
     llm_resp = llm(
-        prompt_str, # Prompt to send to the LlaMa
+        prompt_str,       # Prompt to send to the LlaMa
         max_tokens=200,   # Controls max response length
         temperature=0.5,  # Slight randomness for varied responses
-        top_p=0.95,  # Nucleus sampling
-        top_k=50,    # Limits vocabulary choice
+        top_p=0.95,       # Nucleus sampling
+        top_k=50,         # Limits vocabulary choice
         echo=False,
     )
 

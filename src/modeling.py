@@ -1,10 +1,14 @@
 # src/modeling.py
 
 import os
+from typing import Any, Union
+
 import numpy as np
 import pandas as pd
 import torch
+
 from gensim.models import Word2Vec, KeyedVectors
+from numpy import floating
 from sentence_transformers import SentenceTransformer
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
@@ -18,7 +22,8 @@ from src import config, utils
 def get_vector_columns(vector_size: int) -> list:
     return ['Feature ' + str(i) for i in range(vector_size)]
 
-def calculate_mean_word_vectors(doc: str, word_vector_dict: dict, vocab: set, vector_size: int) -> np.ndarray:
+def calculate_mean_word_vectors(doc: str, word_vector_dict: dict, vocab: set, vector_size: int) -> Union[
+    float, floating[Any]]:
     rng = np.random.default_rng(config.SEED)
     feature_vector = rng.uniform(-0.01, 0.01, vector_size)
     doc_list = [word for word in doc.split() if word in vocab]
@@ -62,19 +67,20 @@ def create_glove_embeddings(x_train, x_val, x_test):
         return None, None, None
 
     try:
-        gloVe_model = KeyedVectors.load_word2vec_format(config.W2V_FILE_NAME, binary=False)
+        glove_model = KeyedVectors.load_word2vec_format(config.W2V_FILE_NAME, binary=False)
     except Exception as e:
         print(f"Error loading GloVe: {e}")
         return None, None, None
 
-    vocabulary = set(gloVe_model.index_to_key)
-    gloVe_word_vector_dict = {word: gloVe_model[word] for word in vocabulary}
+    vocabulary = set(glove_model.index_to_key)
+    glove_word_vector_dict = {word: glove_model[word] for word in vocabulary}
 
-    x_train_emb = encode_embeddings(x_train, gloVe_word_vector_dict, vocabulary, config.GLOVE_VECTOR_SIZE)
-    x_val_emb = encode_embeddings(x_val, gloVe_word_vector_dict, vocabulary, config.GLOVE_VECTOR_SIZE)
-    x_test_emb = encode_embeddings(x_test, gloVe_word_vector_dict, vocabulary, config.GLOVE_VECTOR_SIZE)
+    x_train_emb = encode_embeddings(x_train, glove_word_vector_dict, vocabulary, config.GLOVE_VECTOR_SIZE)
+    x_val_emb = encode_embeddings(x_val, glove_word_vector_dict, vocabulary, config.GLOVE_VECTOR_SIZE)
+    x_test_emb = encode_embeddings(x_test, glove_word_vector_dict, vocabulary, config.GLOVE_VECTOR_SIZE)
 
     return x_train_emb, x_val_emb, x_test_emb
+
 
 def create_st_embeddings(x_train, x_val, x_test):
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -105,10 +111,10 @@ def rf_base_model():
 
 def rf_tuned_model():
     return RandomForestClassifier(
-        max_depth=4,
-        min_samples_leaf=40,
-        min_samples_split=80,
-        n_estimators=500,
+        max_depth=config.TUNED_DEPTH_MAX,
+        min_samples_leaf=config.TUNED_LEAF_MIN,
+        min_samples_split=config.TUNED_SPLIT_MIN,
+        n_estimators=config.TUNED_ESTIMATOR_CNT,
         max_features='sqrt',
         random_state=config.SEED
     )
@@ -116,9 +122,10 @@ def rf_tuned_model():
 def model_performance_classification_sklearn(model, predictors, target):
     pred = model.predict(predictors)
     acc = accuracy_score(target, pred)
-    recall = recall_score(target, pred, average='weighted')
-    precision = precision_score(target, pred, average='weighted')
-    f1 = f1_score(target, pred, average='weighted')
+
+    recall = recall_score(target, pred, average='weighted', zero_division=0)
+    precision = precision_score(target, pred, average='weighted', zero_division=0)
+    f1 = f1_score(target, pred, average='weighted', zero_division=0)
 
     return pd.DataFrame({
         'Accuracy': [acc],
@@ -129,9 +136,9 @@ def model_performance_classification_sklearn(model, predictors, target):
 
 def tune_model(mod, x_train, y_train):
     parameters = {
-        "max_depth": [3, 4, 5, 6],
-        "min_samples_leaf": randint(20, 60),
-        "min_samples_split": randint(40, 100),
+        "max_depth": [5, 10, 15, 20],
+        "min_samples_leaf": randint(2, 10),
+        "min_samples_split": randint(5, 25),
         "n_estimators": [300, 500, 700],
         "max_features": ["sqrt", 0.4]
     }
@@ -145,12 +152,23 @@ def tune_model(mod, x_train, y_train):
         n_jobs=config.USE_ALL_PROCS,
         random_state=config.SEED
     )
+
     random_search.fit(x_train, y_train)
     return random_search.best_estimator_
 
-def run_full_modeling_process(x_train_w2v, y_train, x_val_w2v, y_val, x_test_w2v,
-                              x_train_glove, x_val_glove, x_test_glove,
-                              x_train_st, x_val_st, x_test_st):
+def run_full_modeling_process(
+        x_train_w2v, 
+        y_train, 
+        x_val_w2v, 
+        y_val, 
+        x_test_w2v,
+        x_train_glove, 
+        x_val_glove, 
+        x_test_glove,
+        x_train_st, 
+        x_val_st, 
+        x_test_st
+    ):
 
     # 1. Train Base Models
     print("\n--- Training Base Models ---")

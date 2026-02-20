@@ -43,6 +43,7 @@ def _get_optimized_preprocessor():
     """
     # Initialize objects once
     stemmer = PorterStemmer()
+
     # Use a set for O(1) average time complexity lookups
     stop_words = set(stopwords.words('english'))
     pattern = re.compile('[^A-Za-z0-9]+')
@@ -50,7 +51,7 @@ def _get_optimized_preprocessor():
     def preprocess(text: str) -> str:
         # 1. Remove special characters and convert to lowercase
         cleaned_text = re.sub(pattern, ' ', text).lower().strip()
-        # 2. Remove stopwords and apply stemmer
+        # 2. Remove stopwords and apply the stemmer
         words = [stemmer.stem(word) for word in cleaned_text.split() if word not in stop_words]
         return ' '.join(words)
 

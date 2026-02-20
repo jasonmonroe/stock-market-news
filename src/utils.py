@@ -2,6 +2,7 @@
 
 import os
 import platform
+import random
 import time
 
 import psutil
@@ -9,6 +10,11 @@ import tensorflow as tf
 import torch
 
 from src import config
+
+# --- Functions --- #
+def get_run_id() -> str:
+    """ Generates a unique ID for the current run. """
+    return 'RUN ID:' + str(random.randint(10000, 99999))
 
 
 def start_timer() -> float:

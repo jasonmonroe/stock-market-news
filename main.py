@@ -1,18 +1,24 @@
 # main.py
 
+# =========================================
+#  STOCK MARKET NEWS ANALYSIS & PREDICTOR
+# =========================================
+
 import argparse
 import gc
 import pandas as pd
 
 from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import CountVectorizer
 from tqdm import tqdm
 
-from src import config, utils, data_processing, summarization, modeling
+from src import config, utils, data_processing, summarization, modeling, eda
 
 def run_training_pipeline():
     """
     Executes the full model training and evaluation pipeline.
     """
+
     # --- 1. Setup & Data Loading ---
     utils.show_banner("STARTING MODEL TRAINING PIPELINE")
     start_time = utils.start_timer()
@@ -27,18 +33,34 @@ def run_training_pipeline():
     print("Text preprocessing complete.")
 
     # --- 3. Data Splitting ---
-    utils.show_banner("Splitting Data")
-    x = data['final_clean_text']
-    y = data['label'] # Dependent variable
 
+    # ===========================================
+    #  CREATE TRAINING, VALIDATION, TESTING DATA
+    # ===========================================
+    #
+    # https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.train_test_split.html
+    #
+    # Training Data ~ 80%
+    # Validation Data ~ 10%
+    # Testing Data ~ 10%
+    #
+    # Define input (X) and target labels (y)
+
+    # INDEPENDENT VARIABLES aka features
+    utils.show_banner("Splitting Data")
+    features_df = X = data['final_clean_text']
+    target_df = data['label'] # Dependent variable
+
+    # Split data into 80% train, 20% temporary (to be split into validation & test)
     x_train, x_temp, y_train, y_temp = train_test_split(
-        x,
-        y,
+        features_df,
+        target_df,
         test_size=config.TEMPORARY_DATA_SPLIT,
-        stratify=y,
+        stratify=target_df,
         random_state=config.SEED
     )
 
+    # Further split temporary set into 10% validation, 10% test
     x_val, x_test, y_val, y_test = train_test_split(
         x_temp,
         y_temp,
@@ -64,6 +86,7 @@ def run_training_pipeline():
     utils.show_banner("Training and Tuning Models")
     print("Placeholder for model training.")
 
+    # Run the full modeling process to determine which is the best model and predictor.
     final_model, final_predictor, model_title = modeling.run_full_modeling_process(
         x_train_w2v, y_train, x_val_w2v, y_val, x_test_w2v,
         x_train_glove, x_val_glove, x_test_glove,
@@ -91,7 +114,7 @@ def run_summarization_pipeline():
     # --- 1. Load and Aggregate Data ---
     data = data_processing.load_data()
     weekly_news = summarization.aggregate_weekly_news(data)
-    print(f"Aggregated news into {len(weekly_news)} weeks.")
+    print(f'Aggregated news into {len(weekly_news)} weeks.')
 
     # --- 2. Load LLM ---
     llm = summarization.load_llama_model()
@@ -110,12 +133,55 @@ def run_summarization_pipeline():
     utils.show_timer(start_time)
     utils.show_banner("NEWS SUMMARIZATION PIPELINE COMPLETE")
 
+def run_eda_pipeline():
+    """
+    Executes the Exploratory Data Analysis pipeline to generate and show plots.
+    """
+    utils.show_banner("STARTING EXPLORATORY DATA ANALYSIS (EDA) PIPELINE")
+    start_time = utils.start_timer()
+
+    data = data_processing.load_data()
+    data = data_processing.preprocess_text(data)
+    print("Data loaded and preprocessed.")
+
+    # --- Generate and Show Plots ---
+    print("\nShowing Labeled Barchart for Sentiment...")
+    chart_df = data.copy()
+    chart_df['label'] = chart_df['label'].replace(config.LABEL_SENTIMENT)
+    eda.labeled_barchart(chart_df, 'label')
+
+    print("\nShowing Word Count Distribution...")
+    data['word_count'] = data['news'].apply(lambda x: len(str(x).split()))
+    eda.plot_word_count_distribution(data, 'word_count')
+
+    print("\nShowing Correlation Matrix...")
+    numerical_data = data.select_dtypes(include=['number'])
+    correlation_matrix = numerical_data.corr()
+    eda.show_correlation_matrix(correlation_matrix)
+
+    print("\nShowing Top Word Frequency...")
+    bow_vec = CountVectorizer(max_features=config.VEC_MAX_SIZE)
+    bow_vec.fit_transform(data['final_clean_text'])
+    words = bow_vec.get_feature_names_out()
+    word_counts = bow_vec.transform(data['final_clean_text']).toarray().sum(axis=0)
+    eda.plot_top_word_freq(words, word_counts)
+
+    utils.show_timer(start_time)
+    utils.show_banner("EDA PIPELINE COMPLETE")
 
 if __name__ == '__main__':
+
+    run_id = utils.get_run_id()
+    print(f'\n#--- {run_id} | START PROGRAM ---#')
+
     # This allows running specific parts of the project from the command line
-    parser = argparse.ArgumentParser(description="Stock Market News Analysis Pipeline.")
-    parser.add_argument('--pipeline', choices=['training', 'summarization', 'all'], default='all',
-                        help='Which pipeline to run.')
+    parser = argparse.ArgumentParser(description='Stock Market News Analysis Pipeline.')
+    parser.add_argument(
+        '--pipeline',
+        choices=['training', 'summarization', 'eda', 'all'],
+        default='all',
+        help='Which pipeline to run: training, summarization, eda, or all.',
+    )
 
     args = parser.parse_args()
 
@@ -125,4 +191,8 @@ if __name__ == '__main__':
     if args.pipeline in ['summarization', 'all']:
         run_summarization_pipeline()
 
+    if args.pipeline == 'eda':
+        run_eda_pipeline()
+
     gc.collect()
+    print(f'#--- {run_id} | END PROGRAM ---#\n')
