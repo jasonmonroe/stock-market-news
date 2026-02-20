@@ -55,6 +55,33 @@ CV_RANDOM_SEARCH_CNT = 25
 USE_ALL_PROCS = -1
 SENTENCE_TRANSFER_MODEL = 'sentence-transformers/all-MiniLM-L6-v2'
 
+# Llama Model
+LLAMA_MODEL_PATH = "models/mistral-7b-instruct-v0.1.Q4_K_M.gguf"
+LLAMA_CONTEXT_SIZE = 2048
+
+# LLM Prompt for Summarization
+LLAMA_SUMMARIZATION_PROMPT = """
+Role: You are an expert financial analyst specializing in stock market news analysis.
+
+### **Task:**
+Given a set of **news headlines**, extract **positive** and **negative** financial events that could impact stock prices.
+
+### **Instructions:**
+1. **Analyze each news headline carefully.**
+2. **Identify the company, industry, or entity mentioned.**
+3. **Determine the key event or action** (e.g., earnings report, product launch, legal trouble).
+4. **Assess the likely impact** on stock prices:
+   - **Positive News:** Events likely to **increase** stock prices.
+   - **Negative News:** Events likely to **decrease** stock prices.
+5. **STRICT OUTPUT FORMAT:**
+   - Return **ONLY** a **valid JSON object**.
+   - **DO NOT** include any introductory text, explanations, greetings, or comments.
+   - The output must **begin and end with `{}`** and follow valid JSON syntax.
+
+### **Output Format (STRICTLY ENFORCED)**:
+{ "Positive News": [ "List of positive events" ], "Negative News": [ "List of negative events" ] }
+"""
+
 # Vectors
 GLOVE_VECTOR_SIZE = 100
 W2V_EPOCH_CNT = 40

@@ -52,6 +52,7 @@ stock-market-news/
 5.  **Download Data/Models:**
     - Place the `source_data.csv` file in the `data/` directory.
     - Place the `glove.6B.100d.txt.word2vec` file in the `models/` directory.
+    - If this repo doesn't have `glove.6B.100d.txt.word2vec` you can download it at https://www.kaggle.com/datasets/danielwillgeorge/glove6b100dtxt
 
 ## How to Run
 
@@ -60,6 +61,9 @@ The main script `main.py` can run different parts of the project.
 -   **Run the entire pipeline (training and summarization):**
     ```bash
     python main.py
+    
+    ***If running on MacOS***
+    ./venv/bin/python main.py
     ```
 
 -   **Run only the model training pipeline:**

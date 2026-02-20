@@ -2,6 +2,8 @@
 import pandas as pd
 from llama_cpp import Llama
 
+from src import config
+
 def aggregate_weekly_news(data: pd.DataFrame) -> pd.DataFrame:
     """
     Aggregates news articles by week.
@@ -12,13 +14,13 @@ def aggregate_weekly_news(data: pd.DataFrame) -> pd.DataFrame:
     weekly_news.rename(columns={'final_clean_text': 'news'}, inplace=True)
     return weekly_news
 
-def load_llama_model(model_path: str = "models/mistral-7b-instruct-v0.1.Q4_K_M.gguf") -> Llama:
+def load_llama_model(model_path: str = config.LLAMA_MODEL_PATH) -> Llama:
     """
     Loads the Llama model from the specified path.
     """
-    return Llama(model_path=model_path, n_ctx=2048)
+    return Llama(model_path=model_path, n_ctx=config.LLAMA_CONTEXT_SIZE)
 
-def get_mistral_response(llm: Llama, news: str, prompt: str = "Summarize the following news articles:") -> str:
+def get_mistral_response(llm: Llama, news: str, prompt: str = config.LLAMA_SUMMARIZATION_PROMPT) -> str:
     """
     Mistral v1 AI Model
     This function is designed to interact with a large language model (LLM) named Mistral,
