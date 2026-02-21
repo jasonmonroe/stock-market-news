@@ -6,15 +6,30 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.stem.porter import PorterStemmer
 
-from src import config
+from src import config, seeding
 
-
-def load_data(path: str = config.CSV_FILE) -> pd.DataFrame:
+def load_data(seed_data: bool = False) -> pd.DataFrame:
     """Loads data from a CSV file."""
     nltk.download('stopwords', quiet=True)
     nltk.download('wordnet', quiet=True)
-    return pd.read_csv(path)
 
+    path = config.SOURCE_FILE
+    df = pd.read_csv(path)
+    
+    # Should we merge with seeder?
+    if seed_data:
+        # Run the seeding.py to create the seeder data, then merge it.
+        seeding.run()
+        return merge_seeder_data(df)
+    
+    return df
+
+def merge_seeder_data(df_source: pd.DataFrame) -> pd.DataFrame:
+    df_seeder = pd.read_csv(config.SEEDER_FILE)
+    df_combined = pd.concat([df_source, df_seeder]).drop_duplicates().reset_index(drop=True)
+    df_combined.to_csv(config.DATASET_FILE, index=False)
+    
+    return df_combined
 
 def remove_special_chars(text: str) -> str:
     """Removes special characters from a string."""

@@ -81,6 +81,7 @@ def show_hardware_info():
         print(f"Device ID: {device_id}")
         print(f"GPU Name: {device_name}")
         print(f"Total VRAM: {device_props.total_memory / (config.KBYTE ** 3):.2f} GB")
+
     elif torch.backends.mps.is_available():
         print("✅ Apple Metal (MPS) GPU detected.")
     else:

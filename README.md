@@ -32,6 +32,7 @@ stock-market-news/
     ```
 
 2.  **Create and activate a virtual environment:**
+    ***Note: Use Python v3.12.x or lower***
     ```bash
     python3 -m venv venv
     source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
@@ -60,25 +61,46 @@ stock-market-news/
 
 ## How to Run
 
-The main script `main.py` can run different parts of the project.
+The main script `main.py` can run different parts of the project using the `--pipeline` argument. All commands should be run from the project root after activating the virtual environment.
+
+*Note: It is recommended to use the explicit path to the virtual environment's Python interpreter (`./venv/bin/python`) to ensure the correct dependencies are used, especially on macOS and Linux.*
 
 -   **Run the entire pipeline (training and summarization):**
-    ```bash
-    python main.py
-    ```
-    *If running on MacOS with the virtual environment:*
+    This is the default behavior if no `--pipeline` flag is provided.
     ```bash
     ./venv/bin/python main.py
     ```
+    
+    If you want to generate seeded data to enhance the experience, run this command:
+- ```bash
+    ./venv/bin/python main.py --seed
+    ```
+- 
 
 -   **Run only the model training pipeline:**
     ```bash
-    python main.py --pipeline training
+    ./venv/bin/python main.py --pipeline training
     ```
 
 -   **Run only the news summarization pipeline:**
     ```bash
-    python main.py --pipeline summarization
+    ./venv/bin/python main.py --pipeline summarization
     ```
-    
-# Note: Do not be surprised by "low" results.  The dataset is only 350 rows and is only used for demo purposes.
+
+-   **Run only the EDA (Exploratory Data Analysis) pipeline:**
+    ```bash
+    ./venv/bin/python main.py --pipeline eda
+    ```
+
+-   **Adding Seeder Data:**
+    You can add the `--seed` flag to any of the above commands to merge the source data with the seeder data.
+    -   *Example with the default (all) pipeline:*
+        ```bash
+        ./venv/bin/python main.py --seed
+        ```
+    -   *Example with a specific pipeline:*
+        ```bash
+        ./venv/bin/python main.py --pipeline training --seed
+        ```
+
+# Note: Do **not** be alarmed by "low" scores.  The dataset has only 350 rows and is only used for demo purposes.

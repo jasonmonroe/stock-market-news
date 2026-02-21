@@ -10,3 +10,7 @@ __pycache__/
 # Virtual environment
 venv/
 .env/
+
+# Data files that are generated or not needed in the repository
+data/final_dataset.csv
+data/seeder_data.csv

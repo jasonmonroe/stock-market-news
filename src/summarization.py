@@ -4,6 +4,17 @@ from llama_cpp import Llama
 
 from src import config
 
+def generate_headlines(llm, sentiment, count):
+    prompt = f"""[INST] You are a financial news editor. Write {count} unique, realistic stock market headlines that have a {sentiment} sentiment. 
+    Use different sectors like Tech, Energy, and Healthcare. 
+    Format each headline on a new line. Do not include numbers or bullet points. [/INST]"""
+
+    response = llm(prompt, max_tokens=1500, temperature=0.8)
+    text = response["choices"][0]["text"].strip()
+    # Clean up and split by lines
+    lines = [line.strip() for line in text.split('\n') if len(line.strip()) > 10]
+    return lines[:count]
+
 def aggregate_weekly_news(data: pd.DataFrame) -> pd.DataFrame:
     """
     Aggregates news articles by week.

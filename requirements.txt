@@ -1,5 +1,4 @@
 # requirements.txt
-# --- Libraries to install ---
 
 # Data Analysis & Viz
 pandas
@@ -8,10 +7,9 @@ matplotlib
 seaborn
 scipy
 
-# Deep Learning (Apple Silicon Optimized)
-tensorflow-macos
+# Deep Learning (Modern Apple Silicon approach)
+tensorflow
 torch
-tensorflow-metal
 
 # NLP & LLMs
 sentence-transformers

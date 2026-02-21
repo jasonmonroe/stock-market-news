@@ -14,26 +14,28 @@ from tqdm import tqdm
 
 from src import config, utils, data_processing, summarization, modeling, eda
 
-def run_training_pipeline():
+def run_training_pipeline(seed_data: bool=False):
     """
     Executes the full model training and evaluation pipeline.
     """
 
     # --- 1. Setup & Data Loading ---
-    utils.show_banner("STARTING MODEL TRAINING PIPELINE")
+    utils.show_banner('STARTING MODEL TRAINING PIPELINE')
     start_time = utils.start_timer()
     utils.show_hardware_info()
 
-    data = data_processing.load_data()
-    print("Data loaded successfully.")
+    data = data_processing.load_data(seed_data=seed_data)
+    print(
+        f'\nLoaded {len(data)} rows of data from {config.DATASET_FILE}.'
+    )
+    print('Data loaded successfully.')
 
     # --- 2. Data Preprocessing ---
-    utils.show_banner("Preprocessing Text Data")
+    utils.show_banner('Preprocessing Text Data')
     data = data_processing.preprocess_text(data)
-    print("Text preprocessing complete.")
+    print('Text preprocessing complete.')
 
     # --- 3. Data Splitting ---
-
     # ===========================================
     #  CREATE TRAINING, VALIDATION, TESTING DATA
     # ===========================================
@@ -48,15 +50,15 @@ def run_training_pipeline():
 
     # INDEPENDENT VARIABLES aka features
     utils.show_banner("Splitting Data")
-    features_df = X = data['final_clean_text']
-    target_df = data['label'] # Dependent variable
+    df_features = data['final_clean_text']
+    df_target = data['label'] # Dependent variable
 
     # Split data into 80% train, 20% temporary (to be split into validation & test)
     x_train, x_temp, y_train, y_temp = train_test_split(
-        features_df,
-        target_df,
+        df_features,
+        df_target,
         test_size=config.TEMPORARY_DATA_SPLIT,
-        stratify=target_df,
+        stratify=df_target,
         random_state=config.SEED
     )
 
@@ -171,11 +173,13 @@ def run_eda_pipeline():
 
 if __name__ == '__main__':
 
+    main_start_time = utils.start_timer()
     run_id = utils.get_run_id()
     print(f'\n#--- {run_id} | START PROGRAM ---#')
 
-    # This allows running specific parts of the project from the command line
     parser = argparse.ArgumentParser(description='Stock Market News Analysis Pipeline.')
+
+    # Existing pipeline argument
     parser.add_argument(
         '--pipeline',
         choices=['training', 'summarization', 'eda', 'all'],
@@ -183,10 +187,18 @@ if __name__ == '__main__':
         help='Which pipeline to run: training, summarization, eda, or all.',
     )
 
+    # NEW: Add the seed flag
+    parser.add_argument(
+        '--seed',
+        action='store_true',  # This makes it a boolean flag (True if present, False if not)
+        help='Use this flag to generate/load synthetic seed data.'
+    )
+
     args = parser.parse_args()
 
+    # Pass args.seed to the training pipeline
     if args.pipeline in ['training', 'all']:
-        run_training_pipeline()
+        run_training_pipeline(seed_data=args.seed)
 
     if args.pipeline in ['summarization', 'all']:
         run_summarization_pipeline()
@@ -195,4 +207,6 @@ if __name__ == '__main__':
         run_eda_pipeline()
 
     gc.collect()
-    print(f'#--- {run_id} | END PROGRAM ---#\n')
+    utils.show_timer(main_start_time)
+
+    print(f'\n#--- {run_id} | END PROGRAM ---#\n')

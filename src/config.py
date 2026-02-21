@@ -3,12 +3,13 @@
 # --- Constants ---
 
 # Files
-FILE_PATH = 'data/'
-FILE_NAME = 'source_data.csv'
-CSV_FILE = FILE_PATH + FILE_NAME
+DATASET_FILE = 'data/final_dataset.csv'
+SEEDER_FILE = 'data/seeder_data.csv'
+SOURCE_FILE = 'data/source_data.csv'
 W2V_FILE_NAME = 'models/glove.6B.100d.txt.word2vec'
 
 # General
+NUM_ROWS_PER_SENTIMENT = 200  # Total 600 new rows
 COMMON_WORD_CNT = 20
 KBYTE = 1024  # Corrected from 1042
 MSEC = 1000
@@ -40,9 +41,9 @@ FITTING_SCORE_THRESH = 0.75
 
 # Model: Base Parameters
 BASE_ESTIMATOR_CNT = 300
-BASE_DEPTH_MAX = 10 #15
-BASE_LEAF_MIN = 2 #6
-BASE_SPLIT_MIN = 10 #30
+BASE_DEPTH_MAX = 10 # formerly: 15
+BASE_LEAF_MIN = 2   # formerly: 6
+BASE_SPLIT_MIN = 10 # formerly: 30
 
 # Model: Tuned Parameters
 TUNED_ESTIMATOR_CNT = 500
