@@ -50,6 +50,7 @@ def run():
         You are a financial news generator. Output ONLY raw headlines, one per line. 
         No numbers, no introduction(s), no bullet points.
         Headlines should be around 200 to 400 characters in string length.
+        Put the headline string in quotes (for the `news` column).
         Each headline must be original and unique!
         <</SYS>>
         Generate {config.NUM_ROWS_PER_SENTIMENT} realistic headlines with a {s} market sentiment. [/INST]"""
